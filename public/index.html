@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <a class="navbar-brand" href="/">
+        <img src="/img/weather.svg" width="30" height="30" alt="">
+        Weather App
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logs">History</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container-fluid p-3">
+      <div class="row justify-content-around p-3">
+        <div class="card map weather-card border-success mb-0" style="width: 1430px; min-width: 18rem; min-height: 420px">
+          <div class="card-header bg-transparent border-success text-center text-success font-weight-bold">
+            <table class="table table-borderless table-sm mb-0 text-success">
+              <tbody>
+                <tr>
+                  <td class="font-weight-bold">
+                    <span>Timezone: </span>
+                    <span id="timezone"></span> : 
+                    <span id="latitude"></span>, 
+                    <span id="longitude"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="issMap"></div>
+        </div>
+      </div>
+      <div class="row justify-content-around p-3">
+        <div class="card border-success mb-3" style="width: 25rem; min-width: 18rem;">
+          <div class="card-header bg-transparent border-success text-center text-success font-weight-bold">Current Weather</div>
+            <table class="table table-borderless table-sm mb-0 text-success">
+              <tbody>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Weather</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="current.weather"></span></p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Temperature</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.temp"></span>&deg;C</p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Feels like</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.feels_like"></span>&deg;C</p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Humidity</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.humidity"></span>%</p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Cloud Cover</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.clouds"></span>%</p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Visibility</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.visibility"></span> metres</p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Wind Speed</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.wind_speed"></span> m/s</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-normal align-middle">Wind Direction</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text"><span id="current.wind_deg"></span>&deg;</p>
+                  </td>
+                </tr> 
+              </tbody>
+            </table>
+        </div>
+        <div class="card border-success mb-3" style="width: 25rem; min-width: 18rem;">
+          <div class="card-header bg-transparent border-success text-center text-success font-weight-bold">Hourly</div>
+            <table class="table table-borderless table-sm mb-0 text-success">
+              <tbody>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Now</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="now_t"></span>&deg;C
+                      <span id="now_w"></span> and wind
+                      <span id="now_s" class="text-muted"></span>m/s@<span id="now_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+1 hour</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="1h_t"></span>&deg;C
+                      <span id="1h_w"></span> and wind
+                      <span id="1h_s" class="text-muted"></span>m/s@<span id="1h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+2 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="2h_t"></span>&deg;C
+                      <span id="2h_w"></span> and wind
+                      <span id="2h_s" class="text-muted"></span>m/s@<span id="2h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+3 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="3h_t"></span>&deg;C
+                      <span id="3h_w"></span> and wind
+                      <span id="3h_s" class="text-muted"></span>m/s@<span id="3h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+4 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="4h_t"></span>&deg;C
+                      <span id="4h_w"></span> and wind
+                      <span id="4h_s" class="text-muted"></span>m/s@<span id="4h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+5 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="5h_t"></span>&deg;C
+                      <span id="5h_w"></span> and wind
+                      <span id="5h_s" class="text-muted"></span>m/s@<span id="5h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+6 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="6h_t"></span>&deg;C
+                      <span id="6h_w"></span> and wind
+                      <span id="6h_s" class="text-muted"></span>m/s@<span id="6h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-normal align-middle">+7 hours</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="7h_t"></span>&deg;C
+                      <span id="7h_w"></span> and wind
+                      <span id="7h_s" class="text-muted"></span>m/s@<span id="7h_d" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+        <div class="card border-success mb-3" style="width: 25rem; min-width: 18rem;">
+          <div class="card-header bg-transparent border-success text-center text-success font-weight-bold">Daily</div>
+            <table class="table table-borderless table-sm mb-0 text-success">
+              <tbody>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Today</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="today_w"></span>
+                      <span id="today_h"></span>&deg;
+                      <span id="today_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">Tomorrow</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="tom_w"></span>
+                      <span id="tom_h"></span>&deg;
+                      <span id="tom_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+2 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="2_w"></span>
+                      <span id="2_h"></span>&deg;
+                      <span id="2_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+3 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="3_w"></span>
+                      <span id="3_h"></span>&deg;
+                      <span id="3_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+4 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="4_w"></span>
+                      <span id="4_h"></span>&deg;
+                      <span id="4_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+5 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="5_w"></span>
+                      <span id="5_h"></span>&deg;
+                      <span id="5_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr class="card-header bg-transparent border-success text-success">
+                  <td class="font-weight-normal align-middle">+ 6 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="6_w"></span>
+                      <span id="6_h"></span>&deg;
+                      <span id="6_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-normal align-middle">+ 7 days</td>
+                  <td class="float-right font-weight-normal">
+                    <p class="card-text">
+                      <span id="7_w"></span>
+                      <span id="7_h"></span>&deg;
+                      <span id="7_l" class="text-muted"></span>&deg;
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <a class="navbar-brand" href="/"id="footer">
+        <img src="/img/weather.svg" width="30" height="30" alt="" id="footer">
+      Weather App © 2020
+      </a>
+    </nav>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+    <script src="sketch.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>

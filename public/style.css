@@ -1,0 +1,19 @@
+html, body { 
+    height:100%
+}
+* {
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+#issMap {
+    width: 100%;
+    height: 100%;
+}
+#logMap {
+    width: 100%;
+    height: 100%;
+}
+#footer {
+    margin: auto;
+}
