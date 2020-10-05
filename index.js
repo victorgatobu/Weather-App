@@ -6,7 +6,10 @@ require('dotenv').config();
 
 
 const app = express();
-app.listen(8080, () => console.log('listening at port 8080'));
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+console.log(`Starting server at ${port}`)
+});
 app.use(express.static('public'));
 app.use(express.json({ limit: '1mb'}));
 
